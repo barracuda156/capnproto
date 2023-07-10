@@ -1148,7 +1148,7 @@ namespace _ {  // private
 
 Capability::Client CapabilityServerSetBase::addInternal(
     kj::Own<Capability::Server>&& server, void* ptr) {
-  return Capability::Client(kj::refcounted<LocalClient>(kj::mv(server), *this, ptr));
+  return Capability::Client(kj::Own<ClientHook>(kj::refcounted<LocalClient>(kj::mv(server), *this, ptr)));
 }
 
 kj::Promise<void*> CapabilityServerSetBase::getLocalServerInternal(Capability::Client& client) {

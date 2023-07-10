@@ -553,13 +553,13 @@ kj::Own<ClientHook> membrane(kj::Own<ClientHook> inner, MembranePolicy& policy, 
 }  // namespace
 
 Capability::Client MembranePolicy::importExternal(Capability::Client external) {
-  return Capability::Client(kj::refcounted<MembraneHook>(
-      ClientHook::from(kj::mv(external)), addRef(), true));
+  return Capability::Client(kj::Own<ClientHook>(kj::refcounted<MembraneHook>(
+      ClientHook::from(kj::mv(external)), addRef(), true)));
 }
 
 Capability::Client MembranePolicy::exportInternal(Capability::Client internal) {
-  return Capability::Client(kj::refcounted<MembraneHook>(
-      ClientHook::from(kj::mv(internal)), addRef(), false));
+  return Capability::Client(kj::Own<ClientHook>(kj::refcounted<MembraneHook>(
+      ClientHook::from(kj::mv(internal)), addRef(), false)));
 }
 
 Capability::Client MembranePolicy::importInternal(

@@ -1394,6 +1394,12 @@ private:
     void set(Own<const Directory>&& value) {
       node.init<DirectoryNode>(DirectoryNode { kj::mv(value) });
     }
+    void set_file(Own<const File>&& value) {
+      node.init<FileNode>(FileNode { kj::mv(value) });
+    }
+    void set_dir(Own<const Directory>&& value) {
+      node.init<DirectoryNode>(DirectoryNode { kj::mv(value) });
+    }
   };
 
   template <typename T>
@@ -1510,14 +1516,14 @@ private:
             if (mode == TransferMode::COPY) {
               auto copy = newInMemoryFile(clock);
               copy->copy(0, **file, 0, size.orDefault(kj::maxValue));
-              entry.set(kj::mv(copy));
+              entry.set_file(kj::mv(copy));
             } else {
               if (mode == TransferMode::MOVE) {
                 KJ_ASSERT(fromDirectory.tryRemove(fromPath), "couldn't move node", fromPath) {
                   return false;
                 }
               }
-              entry.set(kj::mv(*file));
+              entry.set_file(kj::mv(*file));
             }
             return true;
           } else {
@@ -1542,14 +1548,14 @@ private:
                   cpim.entries.insert(std::make_pair(nameRef, kj::mv(newEntry)));
                 }
               }
-              entry.set(kj::mv(copy));
+              entry.set_dir(kj::mv(copy));
             } else {
               if (mode == TransferMode::MOVE) {
                 KJ_ASSERT(fromDirectory.tryRemove(fromPath), "couldn't move node", fromPath) {
                   return false;
                 }
               }
-              entry.set(kj::mv(*subdir));
+              entry.set_dir(kj::mv(*subdir));
             }
             return true;
           } else {

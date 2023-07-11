@@ -227,4 +227,8 @@ private:
 }  // namespace _ (private)
 }  // namespace kj
 
+#if defined(__APPLE__) && defined(__POWERPC__)
+#define BROKEN_ASSERTS
+#endif
+
 KJ_END_HEADER

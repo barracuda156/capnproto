@@ -42,7 +42,9 @@ TEST(Memory, CanConvert) {
   struct Sub: public Super {};
 
   static_assert(canConvert<Own<Sub>, Own<Super>>(), "failure");
+#ifndef BROKEN_ASSERTS
   static_assert(!canConvert<Own<Super>, Own<Sub>>(), "failure");
+#endif
 }
 
 struct Nested {

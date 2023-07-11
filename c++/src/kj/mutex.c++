@@ -866,11 +866,17 @@ void Once::reset() {
   { \
     int pthreadError = code; \
     if (pthreadError != 0) { \
-      KJ_LOG(ERROR, #code, strerror(pthreadError)); \
+      KJ_LOG(WARNING, #code, strerror(pthreadError)); \
     } \
   }
 
+#if defined(__APPLE__) && !defined(__clang__)
+Mutex::Mutex() {
+  KJ_PTHREAD_CALL(pthread_rwlock_init(&mutex, nullptr));
+}
+#else
 Mutex::Mutex(): mutex(PTHREAD_RWLOCK_INITIALIZER) {}
+#endif
 Mutex::~Mutex() {
   KJ_PTHREAD_CLEANUP(pthread_rwlock_destroy(&mutex));
 }
@@ -1057,9 +1063,16 @@ void Mutex::induceSpuriousWakeupForTest() {
   }
 }
 
+#if defined(__APPLE__) && !defined(__clang__)
+Once::Once(bool startInitialized)
+    : state(startInitialized ? INITIALIZED : UNINITIALIZED) {
+      KJ_PTHREAD_CALL(pthread_mutex_init(&mutex, nullptr));
+    }
+#else
 Once::Once(bool startInitialized)
     : state(startInitialized ? INITIALIZED : UNINITIALIZED),
       mutex(PTHREAD_MUTEX_INITIALIZER) {}
+#endif
 Once::~Once() {
   KJ_PTHREAD_CLEANUP(pthread_mutex_destroy(&mutex));
 }

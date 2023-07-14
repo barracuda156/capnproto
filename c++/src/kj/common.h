@@ -102,6 +102,7 @@ KJ_BEGIN_HEADER
 #include <cstring>
 #include <initializer_list>
 #include <string.h>
+#include <stdint.h>
 
 #if __linux__ && __cplusplus > 201200L
 // Hack around stdlib bug with C++14 that exists on some Linux systems.
@@ -618,7 +619,11 @@ template <> constexpr bool isIntegral<unsigned long long>() { return true; }
 template <typename T>
 struct CanConvert_ {
   static int sfinae(T);
+#if defined(__APPLE__) && defined(__ppc__) // Yes, only PowerPC 32-bit ABI.
+  static uint8_t sfinae(...);
+#else
   static bool sfinae(...);
+#endif
 };
 
 template <typename T, typename U>
